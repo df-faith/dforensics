@@ -58,7 +58,7 @@ pysftp==0.2.9
 python-dateutil==2.8.1
 pytsk3==20170802
 pytz==2019.3
-PyYAML==3.12
+PyYAML==5.1
 rdflib==4.2.2
 readline==6.2.4.1
 rekall==1.7.1
