@@ -1,0 +1,325 @@
+body { 
+  margin: 0;
+  background-color:#fcfcfc;
+  font-family: 'Droid Sans', arial, serif;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+i {
+  cursor: pointer;
+}
+
+
+/* === STREAMING BLOCK === */
+#kafka-block {
+  margin-left: 180px;
+  padding: 10px 10px;
+  top: 50px;
+  position: relative;
+}
+ 
+/* === HEADER BUTTONS AND DROPDOWN === */
+
+.header {
+  background-color: #f1f1f1;
+  padding: 20px 10px;
+  position: fixed;
+  height: 30px;
+  width: 100%;
+  align-items: center;
+  display: flex;
+  z-index: 1;
+}
+
+.header > .button-icono {
+    float: left;
+    margin-left: 15px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.header >.help {
+  font-size:2.5em;
+}
+.header > .button {
+    float: left;
+    margin: 15px;
+    cursor: pointer;
+}
+
+.header > .button:hover {
+    color:#818181;
+}
+
+.header > .button:active {
+    color:#717171;
+}
+
+.header > a {
+    width: 130px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 100;
+    color: black;
+}
+
+.dropdown-button {
+    cursor: pointer;
+    padding: 12px 16px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    background-color: #f1f1f1;
+}
+
+.dropdown-button:hover {
+    background-color:#818181;
+    color: white;
+}
+
+.dropdown-button:active {
+    background-color:#717171;
+    color: white;
+}
+
+/* === SIDEBAR === */
+.button-block {
+    height: 100%;
+    width: 160px;
+    position: fixed;
+    left: 0;
+    top: 70px;
+    overflow-x: hidden;
+    padding-left: 15px;
+    background-color: #f1f1f1;
+    z-index: 0;
+}
+
+.button-block > .button {
+  display: block;
+  font-size: 16px;
+  padding: 10px 10px;
+  cursor: pointer;
+}
+
+.button-block > .button:hover {
+    background-color:#818181;
+}
+
+.button-block > .button:active {
+    background-color:#717171;
+}
+
+.button-block-head {
+    color: black;
+  display: block;
+  cursor: pointer;
+}
+
+.button-block-head:hover {
+    color:#818181;
+}
+
+/* === TITLE ANIMATION === */
+
+/* Wobble To Top Right */
+@-webkit-keyframes hvr-wobble-to-top-right {
+  16.65% {
+    -webkit-transform: translate(8px, -8px);
+    transform: translate(8px, -8px);
+  }
+  33.3% {
+    -webkit-transform: translate(-6px, 6px);
+    transform: translate(-6px, 6px);
+  }
+  49.95% {
+    -webkit-transform: translate(4px, -4px);
+    transform: translate(4px, -4px);
+  }
+  66.6% {
+    -webkit-transform: translate(-2px, 2px);
+    transform: translate(-2px, 2px);
+  }
+  83.25% {
+    -webkit-transform: translate(1px, -1px);
+    transform: translate(1px, -1px);
+  }
+  100% {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+  }
+}
+@keyframes hvr-wobble-to-top-right {
+  16.65% {
+    -webkit-transform: translate(8px, -8px);
+    transform: translate(8px, -8px);
+  }
+  33.3% {
+    -webkit-transform: translate(-6px, 6px);
+    transform: translate(-6px, 6px);
+  }
+  49.95% {
+    -webkit-transform: translate(4px, -4px);
+    transform: translate(4px, -4px);
+  }
+  66.6% {
+    -webkit-transform: translate(-2px, 2px);
+    transform: translate(-2px, 2px);
+  }
+  83.25% {
+    -webkit-transform: translate(1px, -1px);
+    transform: translate(1px, -1px);
+  }
+  100% {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+  }
+}
+
+.hvr-wobble-to-top-right {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.hvr-wobble-to-top-right:hover, .hvr-wobble-to-top-right:focus, .hvr-wobble-to-top-right:active {
+  -webkit-animation-name: hvr-wobble-to-top-right;
+  animation-name: hvr-wobble-to-top-right;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+
+/* === MODAL ==== */
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 5; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%;
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+
+.modal-column {
+    width:50%;
+    float:left;
+}
+
+.modal .button {
+  display: block;
+  font-size: 16px;
+  padding: 10px 10px;
+  cursor: pointer;
+  background-color: #f1f1f1;
+  margin-bottom: 10px;
+}
+
+.modal .button:hover {
+    background-color:#818181;
+}
+
+.modal .button:active {
+    background-color:#717171;
+}
+
+.modal input[type=text] {
+    padding: 5px 7px;
+    margin: 8px 0;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* === LOADING ANIMATION ==== */
+
+.loading-headline[active=true] span {
+  animation: loading-headline 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.loading-headline span:nth-child(1) {
+  animation-delay: -0.72s;
+}
+.loading-headline span:nth-child(2) {
+  animation-delay: -0.64s;
+}
+.loading-headline span:nth-child(3) {
+  animation-delay: -0.56s;
+}
+.loading-headline span:nth-child(4) {
+  animation-delay: -0.48s;
+}
+.loading-headline span:nth-child(5) {
+  animation-delay: -0.40s;
+}
+.loading-headline span:nth-child(6) {
+  animation-delay: -0.32s;
+}
+.loading-headline span:nth-child(7) {
+  animation-delay: -0.24s;
+}
+.loading-headline span:nth-child(8) {
+  animation-delay: -0.16s;
+}
+.loading-headline span:nth-child(9) {
+  animation-delay: -0.08s;
+}
+.loading-headline span:nth-child(10) {
+  animation-delay: -0s;
+}
+
+@keyframes loading-headline {
+  0%,10% {
+    color: #ccc;
+    width: 1.5em
+  }
+  50%, 100% {
+    color: #000;
+    width: 1em
+  }
+}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ title }}</title>
+    <link href=' http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='icono.min.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+</head>
+<body>
+
+    <!--================
+    ===== HEADER  ======
+    ====================-->
+
+    <div class="header">
+        <a class="button hvr-wobble-to-top-right" href="/"><h3 class="loading-headline" active="flase">
+                DForensics
+            </h3></a>
+        <div class="button dropdown">
+            VM <span id="vm-name">({{ vms[0]["name"] }})</span>
+            <div class="dropdown-content" id="vm-block">
+                {% for vm in vms %}
+                    <div class="dropdown-button" onclick="changeVM('{{ vm.name }}', '{{ vm.profile }}')">{{ vm["name"] }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="button dropdown">
+            Memory Dump Select <span id="mdump">{% if current_rekall_dump|length %} ({{ current_rekall_dump }}) {% else %} (nothing) {% endif %}</span>
+            <div class="dropdown-content" id="mdump-block">
+                <div class="dropdown-button">nothing</div>
+            </div>
+        </div>
+        <div class="button dropdown">
+            Storage Dump Select <span id="sdump">{% if current_sleuthkit_dump|length %} ({{ current_sleuthkit_dump }}) {% else %} (nothing) {% endif %}</span>
+            <div class="dropdown-content" id="sdump-block">
+                <div class="dropdown-button">nothing</div>
+            </div>
+        </div>
+
+        <div class="button icono-sync" onclick="refreshDumpList();" title="Refresh Dump List"></div>
+        <div class="button icono-document" onclick="showMModal('logModal')" title="Show Log Files"></div>
+        <div class="button" onclick="resetSession();">Reset</div>
+        <div class="button help" onclick="showMModal('helpModal')" title="Help Menu"><b>?</b></div>
+    </div>
+
+    <!--================
+    ===== SIDEBAR ======
+    ====================-->
+
+    <div id="acquisition" class="button-block" style="display:block">
+        <div class="button-block-head" onclick="toggleSidebar();"><h3>Acquisition <i class="icono-rightArrow"></i></h3></div>
+        <div class="button" onclick="functionCall('acquisition', 'rekall', ['get_bash_history'])">
+            bash history</div>
+        <div class="button" onclick="functionCall('acquisition', 'rekall', ['get_process_list'])">
+            process list</div>
+        <div class="button" onclick="functionCall('acquisition', 'rekall', ['get_ifconfig'])">
+            if config</div>
+        <div class="button" onclick="functionCall('acquisition', 'rekall', ['get_netstat'])">
+            netstat</div>
+        <div class="button" onclick="showMModal('memmapModalAcquisition')">memmap</div>
+        <div class="button" onclick="showMModal('memdumpModalAcquisition')">memdump</div>
+        <div class="button" onclick="functionCall('acquisition', 'rekall', ['get_memory_dump'])">
+            memory dump</div>
+    </div>
+
+    <div id="analysis" class="button-block" style="display:none">
+        <div class="button-block-head" onclick="toggleSidebar();"><h3>Analysis <i class="icono-leftArrow"></i></h3></div>
+        <div><b>Rekall</b></div>
+        <div class="button" onclick="functionCall('analysis', 'rekall', ['get_bash_history'])">
+            bash history</div>
+        <div class="button" onclick="functionCall('analysis', 'rekall', ['get_process_list'])">
+            process list</div>
+        <div class="button" onclick="functionCall('analysis', 'rekall', ['get_ifconfig'])">
+            if config</div>
+        <div class="button" onclick="functionCall('analysis', 'rekall', ['get_netstat'])">
+            netstat</div>
+        <div class="button" onclick="showMModal('memmapModalAnalysis')">memmap</div>
+        <div class="button" onclick="showMModal('memdumpModalAnalysis')">memdump</div>
+
+        <div><b>Sleuthkit</b></div>
+        <div class="button" onclick="functionCall('analysis', 'sleuthkit', ['get_partitions'])">
+            partitions</div>
+
+        <div id="filesystemButton" class="button" onclick="showMModal('filesystemModal')">filesystem</div>
+        <div class="button" onclick="showMModal('getListDirPathModal')">listdir</div>
+        <div class="button" onclick="showMModal('getFilePathModal')">getfile</div>
+        <div class="button" onclick="showMModal('mmcatModal')">mmcat</div>
+    </div>
+    
+    <!--================
+    ===== OUTPUT =======
+    ====================-->
+
+    <div id="kafka-block">
+        <pre id="streaming"> </pre>
+    </div>
+
+    <!--================
+    ===== MODALS =======
+    ====================-->
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Help</h3>
+        <h4>General</h4>
+        <p>With the buttons in the top you can select the dump or VM you want to analyse.
+        Furthermore, you can refresh the dumps and view old logs.
+        Switch between aquisitation and analysis with a click on it.</p>
+        <h4>Aquisitation</h4>
+        <p>You can get live information from the system or create a dump file.</p>
+        <h4>Analysis</h4>
+        <p>You analyse the selected dumps.</p>
+        <p></p>
+      </div>
+    </div>
+
+    <!-- Log Modal -->
+    <div id="logModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Pick your log</h3>
+        <div class="modal-column">
+          {% for log in logs %}
+          <a class="button log-{{ log }}" href="/log/get/{{ log }}" target="_blank">{{ log|fromtimestamp }}</a>
+          {% endfor %}
+        </div>
+        <div class="modal-column">
+          {% for log in logs %}
+          <div class="button log-{{ log }}" onclick="removeLog({{ log }});">Remove Log</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Filesystem Modal -->
+    <div id="filesystemModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Enter offset</h3>
+        <div id="partitionList"></div>
+      </div>
+    </div>
+
+    <!-- Get File Path Modal -->
+    <div id="getFilePathModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Get File</h3>
+        <p>Enter the path of the file in your analysis filesystem and
+        the output path where to store it on your system.</p>
+        <input type="text" placeholder="Path" id="getFilePath">
+        <input type="text" placeholder="Output Path" id="getFileOutPath">
+        <div class="button" onclick="tskGetFile();">getfile</div>
+      </div>
+    </div>
+
+    <!-- Mmcat Modal -->
+    <div id="mmcatModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Copy part of the disk</h3>
+        <p>Enter the offset that you found via the partition listing.
+        and the size of the partition or your part.
+        Lastly, put in the path where you want to store the data on your system.</p>
+        <input type="text" placeholder="Offset" id="mmcatOffset">
+        <input type="text" placeholder="Size" id="mmcatSize">
+        <input type="text" placeholder="Output Path" id="mmcatOutPath">
+        <div class="button" onclick="tskMmcat();">S mmcat</div>
+      </div>
+    </div>
+
+    <!-- Get List Dir Modal -->
+    <div id="getListDirPathModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>List the directory</h3>
+        <p>Enter the path of the directory on your analysis filesystem</p>
+        <input type="text" placeholder="Path" id="listDirPath">
+        <div class="button" onclick="tskListDir();">listdir</div>
+      </div>
+    </div>
+
+    <!-- Memmap Acquisition Modal -->
+    <div id="memmapModalAcquisition" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Memory Map</h3>
+        <p>Enter the PID of the desired process.</p>
+        <input type="text" placeholder="PID" id="memmapPidAcquisition">
+        <div class="button" onclick="rklMemmapAcquisition();">memmap</div>
+      </div>
+    </div>
+
+    <!-- Memmap AnalysisModal -->
+    <div id="memmapModalAnalysis" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Memory Map</h3>
+        <p>Enter the PID of the desired process.</p>
+        <input type="text" placeholder="PID" id="memmapPidAnalysis">
+        <div class="button" onclick="rklMemmapAnalysis();">memmap</div>
+      </div>
+    </div>
+
+    <!-- Memdump Acquisition Modal -->
+    <div id="memdumpModalAcquisition" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Memory Dump</h3>
+        <p>Enter the PID of the desired process and the output path on your system</p>
+        <input type="text" placeholder="PID" id="memdumpPidAcquisition">
+        <input type="text" placeholder="Output Path" id="memdumpPathAcquisition">
+        <div class="button" onclick="rklMemdumpAcquisition();">memdump</div>
+      </div>
+    </div>
+
+    <!-- Memdump AnalysisModal -->
+    <div id="memdumpModalAnalysis" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Memory Dump</h3>
+        <p>Enter the PID of the desired process and the output path on your system</p>
+        <input type="text" placeholder="PID" id="memdumpPidAnalysis">
+        <input type="text" placeholder="Output Path" id="memdumpPathAnalysis">
+        <div class="button" onclick="rklMemdumpAnalysis();">memdump</div>
+      </div>
+    </div>
+</body>
+</html>

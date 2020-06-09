@@ -1,0 +1,19 @@
+{
+    "memory_dump_path":"/data/dforensics/memory_dumps",
+    "storage_dump_path":"/data/dforensics/storage_dumps",
+    "log_database_path":"log.db",
+    "monitor_ip":"1.2.3.4",
+    "monitor_ssh_user":"user",
+    "monitor_ssh_pw":"mypassword",
+    "monitor_ssh_key":"/home/user/.ssh/id_rsa",
+    "monitor_ssh_key_pass":"",
+    "kafka_host":"kafka-host.org",
+    "kafka_port":"9092",
+    "kafka_topic_commands":"dforensics-cmd",
+    "kafka_topic_data":"dforensics-data",
+    "rekall_profile_repository_path":"/home/fhantke/profile",
+    "vms":[
+        {"name":"ubuntu1604", "profile":"4.4.0-112-generic"},
+        {"name":"monitor", "profile":"TODO"}
+    ]
+}
