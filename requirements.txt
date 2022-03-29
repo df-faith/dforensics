@@ -32,7 +32,7 @@ kafka-python==1.4.7
 libqcow-python==20191103
 MarkupSafe==1.1.1
 oauth2client==3.0.0
-paramiko==2.6.0
+paramiko==2.10.1
 parsedatetime==2.4
 parso==0.5.1
 pathlib==1.0.1
